@@ -16,40 +16,33 @@ DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
 TELEGRAM_TOKEN=1725447442:AATuNIAicSPdePxxTHdbO1X_4hfAnONOyiA
 ```
 TELEGRAM_TOKEN должен быть свой, получить его можно в tg @BotFather
+Чтобы поднять нужно просто ввести команду
 ``` bash
 docker-compose up -d --build
 ```
-
-Check status of the containers.
+Чтобы создать админа надо посмотреть всё, что запущено
 ``` bash
 docker ps -a
 ```
-It should look similar to this:
+Примерно вот так будет выглядеть:
 <p align="left">
     <img src="https://github.com/ohld/django-telegram-bot/raw/main/.github/imgs/containers_status.png">
 </p>
 
-Try visit <a href="http://0.0.0.0:8000/tgadmin">Django-admin panel</a>.
-
-### Enter django shell:
+Там надо найти что-то, где есть слово web и скопировать id контейнера(вместо 44a0791a59fc) в команду:
 
 ``` bash
-docker exec -it dtb_django bash
+docker exec -it 44a0791a59fc bash
 ```
 
-### Create superuser for Django admin panel
+Это открылся стандартный django-терминал, далее просто создаем все как обычно
 
 ``` bash
 python manage.py createsuperuser
 ```
-
-### To see logs of the container:
+И вот так делаются миграции
 
 ``` bash
-docker logs -f dtb_django
+python manage.py makemigrations
+python manage.py migrate
 ```
-
-```
-
-
-----
