@@ -30,7 +30,14 @@ class User(CreateUpdateTracker):
 
     objects = GetOrNoneManager()  # user = User.objects.get_or_none(user_id=<some_id>)
     admins = AdminUserManager()  # User.admins.all()
-
+    #myself
+    domain = models.CharField(null=True, max_length=50)
+    choices = [("Application", "Application"), ("Bearer", "Bearer")]
+    auth_type = models.CharField(null=True,max_length=13, choices=choices)
+    application_token = models.CharField(null=True, max_length=50)
+    refresh_token = models.TextField(null=True)
+    auth_token = models.TextField(null=True)
+    taiga_id = models.CharField(null=True, max_length=50)
     def __str__(self):
         return f'@{self.username}' if self.username is not None else f'{self.user_id}'
 
