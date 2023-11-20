@@ -38,7 +38,7 @@ services:
       dockerfile: LocalDockerfile
     container_name: dtb_bot
     restart: always
-    command: python run_polling.py
+    command: sh -c "watchmedo auto-restart --recursive --directory=/code --pattern=*.py -- python run_polling.py"
     env_file:
       - ./.env
     depends_on:
