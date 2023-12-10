@@ -39,6 +39,8 @@ services:
     container_name: dtb_bot
     restart: always
     command: sh -c "watchmedo auto-restart --recursive --directory=/code --pattern=*.py -- python run_polling.py"
+    volumes:
+      - .:/code
     env_file:
       - ./.env
     depends_on:

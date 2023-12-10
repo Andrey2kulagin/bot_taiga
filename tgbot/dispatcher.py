@@ -18,14 +18,26 @@ from tgbot.handlers.location import handlers as location_handlers
 from tgbot.handlers.onboarding import handlers as onboarding_handlers
 from tgbot.handlers.broadcast_message import handlers as broadcast_handlers
 from tgbot.main import bot
-
-
+from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, Filters
+from tgbot.handlers.onboarding.handlers import domain_choise_handler, work_with_login_user
+from tgbot.handlers.user_auth_in_taiga.handlers import user_auth_handler
+AUTH_USER, WORK_WITH_LOGIN_USER = range(2)
+registration_handler = ConversationHandler(
+        entry_points=[CommandHandler('start', onboarding_handlers.command_start)],
+        states={
+            AUTH_USER: [
+                user_auth_handler,
+            ],
+            WORK_WITH_LOGIN_USER: [MessageHandler(Filters.text & ~Filters.command, work_with_login_user)],
+        },
+        fallbacks=[CommandHandler('start', onboarding_handlers.command_start)],
+    )
 def setup_dispatcher(dp):
     """
     Adding handlers for events from Telegram
     """
     # onboarding
-    dp.add_handler(CommandHandler("start", onboarding_handlers.command_start))
+    dp.add_handler(registration_handler)
 
     # admin commands
     dp.add_handler(CommandHandler("admin", admin_handlers.admin))

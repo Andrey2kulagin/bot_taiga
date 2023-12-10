@@ -1,5 +1,5 @@
 import requests
-from .all_service import get_auth_refresh_via_username, set_taiga_user_data
+from .all_service import get_auth_refresh_id_via_username, set_taiga_user_data
 from django.http import Http404
 
 def get_application_auth_code(application_id, auth_token, domain):
@@ -52,20 +52,20 @@ def get_application_token(application_id, auth_token, domain):
 
 def get_application_ver_token(username: str, password: str, application_id: str, domain: str) -> str:
     # получаем auth_token
-    status_code, auth_token, refresh = get_auth_refresh_via_username(
+    status_code, auth_token, refresh, taiga_id = get_auth_refresh_id_via_username(
         domain, username, password)
     if status_code == 200:
         # получаем токен и верифицируем токе
-        return get_application_token(application_id, auth_token, domain)
+        return *get_application_token(application_id, auth_token, domain), taiga_id
     else:
-        return 401, "Неправильные логин или пароль или такого пользователя не существует"
+        return 401, "Неправильные логин или пароль или такого пользователя не существует", ""
 
 
 def application_login_handler(username, password, application_id, domain, tg_id):
     try:
-        status, token = get_application_ver_token(username, password, application_id, domain)
+        status, token, taiga_id = get_application_ver_token(username, password, application_id, domain)
         if status == 200:
-            set_taiga_user_data(tg_id=tg_id, domain=domain,auth_type="Application",application_token=token)
+            set_taiga_user_data(tg_id=tg_id, domain=domain,auth_type="Application",application_token=token, taiga_id=taiga_id)
             return status, ""
         return status, token
     except Http404:

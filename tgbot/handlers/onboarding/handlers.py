@@ -2,24 +2,42 @@ import datetime
 
 from django.utils import timezone
 from telegram import ParseMode, Update
-from telegram.ext import CallbackContext
+from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, Filters
 
 from tgbot.handlers.onboarding import static_text
 from tgbot.handlers.utils.info import extract_user_data_from_update
 from users.models import User
 from tgbot.handlers.onboarding.keyboards import make_keyboard_for_start_command
-
+from tgbot import dispatcher 
 
 def command_start(update: Update, context: CallbackContext) -> None:
     u, created = User.get_user_and_created(update, context)
 
     if created:
         text = static_text.start_created.format(first_name=u.first_name)
-    else:
-        text = static_text.start_not_created.format(first_name=u.first_name)
-
-    update.message.reply_text(text=text,
+        update.message.reply_text(text=text,
                               reply_markup=make_keyboard_for_start_command())
+        return dispatcher.AUTH_USER
+    else:
+        if u.is_taiga_auth:
+            return dispatcher.WORK_WITH_LOGIN_USER
+        else:
+            text = static_text.start_not_created.format(first_name=u.first_name)
+            update.message.reply_text(text=text,
+                              reply_markup=make_keyboard_for_start_command())
+            return dispatcher.AUTH_USER
+
+    
+    
+
+def domain_choise_handler(update: Update, context: CallbackContext):
+    print("domain_choise_handler")
+
+
+def work_with_login_user(update: Update, context: CallbackContext):
+    print("work_with_login_user")
+
+
 
 
 def secret_level(update: Update, context: CallbackContext) -> None:

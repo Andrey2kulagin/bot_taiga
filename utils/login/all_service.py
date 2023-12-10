@@ -38,7 +38,7 @@ def domain_validate_and_normalize(old_domain:str) -> tuple[bool,str]:
             return False, "Не можем связаться с вашим сервером. Введите правильный домен или разбудите сервер"
 
     return True, old_domain
-def get_auth_refresh_via_username(domain: str, username: str, password: str) -> tuple[int, str]:
+def get_auth_refresh_id_via_username(domain: str, username: str, password: str) -> tuple[int, str]:
     print(domain)
     endpoint = "api/v1/auth"
     data = {
@@ -51,14 +51,17 @@ def get_auth_refresh_via_username(domain: str, username: str, password: str) -> 
     print(status_code)
     if status_code == 200:
         response_data = response.json()
+        print("RESPONSE_DATA", response_data)
         auth_token = response_data.get("auth_token")
         refresh = response_data.get("refresh")
-        return status_code, auth_token, refresh
-    return status_code, "wrr", "wee"
+        return status_code, auth_token, refresh, str(response_data.get("id"))
+    return status_code, "", "", ""
 
-def set_taiga_user_data(tg_id, domain,auth_type, refresh=None, application_token=None, auth_token=None):
+def set_taiga_user_data(tg_id, domain,auth_type, refresh=None, application_token=None, auth_token=None, taiga_id=None):
     user = User.objects.get(user_id=tg_id)
     user.domain = domain
+    user.taiga_id = taiga_id
+    user.is_taiga_auth = True
     if auth_type == "Bearer":
         user.auth_type = "Bearer"
         user.refresh_token = refresh

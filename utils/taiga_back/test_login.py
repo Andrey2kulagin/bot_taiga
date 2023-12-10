@@ -1,19 +1,7 @@
 import requests
 
 
-def get_auth_refresh_via_username(domain: str, username: str, password: str) -> tuple[int, str]:
-    endpoint = "api/v1/auth"
-    data = {
-        "type": "normal",
-        "username": username,
-        "password": password
-    }
-    response = requests.post(url=domain+endpoint, data=data)
-    status_code = response.status_code
-    response_data = response.json()
-    auth_token = response_data.get("auth_token")
-    refresh = response_data.get("refresh")
-    return status_code, auth_token, refresh
+from utils.login.all_service import get_auth_refresh_id_via_username
 
 
 
@@ -85,7 +73,7 @@ def get_application_token(application_id, auth_token, domain):
 
 def get_application_ver_token(username: str, password: str, application_id: str, domain: str) -> str:
     # получаем auth_token
-    status_code, auth_token, refresh = get_auth_refresh_via_username(
+    status_code, auth_token, refresh, taiga_id = get_auth_refresh_id_via_username(
         domain, username, password)
     if status_code == 200:
         # получаем токен и верифицируем токе

@@ -11,6 +11,7 @@ def classic_login(request):
     if request.GET.get("domain") is None or request.GET.get("tg_id") is None:
         return render(request, 'login/message_template.html', {"message": "Ошибка в ссылке, не переданы обязательные параметры. Проверьте правильность ссылки или обратитесь к администратору бота"})
     status, domain = domain_validate_and_normalize(request.GET.get('domain'))
+    print(domain)
     if status == False:
         return render(request, 'login/message_template.html', {"message": domain})
     tg_id = request.GET.get('tg_id')
