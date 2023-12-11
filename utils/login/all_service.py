@@ -1,12 +1,22 @@
 import requests
 from users.models import User
+from urllib.parse import urlparse
+import os
+from telegram import Bot
 
+def extract_domain(url):
+    parsed_url = urlparse(url)
+    scheme = parsed_url.scheme
+    netloc = parsed_url.netloc
+    domain = f"{scheme}://{netloc}/"
+    return domain
 
 def domain_validate_and_normalize(old_domain:str) -> tuple[bool,str]:
     if old_domain.find("http://") == -1 and old_domain.find("https://") == -1:
         return False, "Домен должен включать http:// или https:// и иметь вид https://api.taiga.io/"
     if old_domain[-1] != '/':
         old_domain+='/'
+    old_domain = extract_domain(url=old_domain)
     try:
         data = {
             "password": "abracadanra",
@@ -18,20 +28,9 @@ def domain_validate_and_normalize(old_domain:str) -> tuple[bool,str]:
         print(response.status_code)
         print(response.content)
         no_taiga_msg = "Это домен не тайги. Если вы уверены, что на этом сервере тайга - обратитесь к администратору бота"
-        if response.status_code != 401 :
+        if response.status_code not in (401, 429):
             
             return False, no_taiga_msg
-        no_taiga_msg = "Это домен не тайги. Если вы уверены, что на этом сервере тайга - обратитесь к администратору бота"
-        try:
-            data = response.json()
-            if data.get("code") != 'invalid_credentials':
-                print("Тут")
-                return False, no_taiga_msg
-        except requests.exceptions.JSONDecodeError as e:
-            return False, no_taiga_msg
-        
-        
-
     except requests.exceptions.RequestException as e:
         if isinstance(e, requests.exceptions.ConnectionError):
             
@@ -70,3 +69,13 @@ def set_taiga_user_data(tg_id, domain,auth_type, refresh=None, application_token
         user.auth_type = "Application"
         user.application_token = application_token
     user.save()
+    send_succes_auth_msg(user.user_id)
+    
+
+def send_succes_auth_msg(chat_id):
+    """_summary_
+    Отправляет пользователю сообщение об успешной авторизации в тайге
+    """
+    bot_token = os.getenv("TELEGRAM_TOKEN")
+    bot = Bot(token=bot_token)
+    bot.send_message(chat_id=chat_id, text="Поздравляем, авторизация завершена")
