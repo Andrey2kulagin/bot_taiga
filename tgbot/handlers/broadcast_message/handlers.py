@@ -47,7 +47,7 @@ def broadcast_command_with_message(update: Update, context: CallbackContext):
 
 
 def broadcast_decision_handler(update: Update, context: CallbackContext) -> None:
-    # callback_data: CONFIRM_DECLINE_BROADCAST variable from manage_data.py
+    # callback_data: CONFIRM_DECLINE_BROADCAST variable from utils.py
     """ Entered /broadcast <some_text>.
         Shows text in HTML style with two buttons:
         Confirm and Decline
