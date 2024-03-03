@@ -23,25 +23,25 @@ from tgbot.handlers.onboarding.handlers import domain_choise_handler, work_with_
 from tgbot.handlers.user_auth_in_taiga.handlers import user_auth_handler
 from tgbot.handlers.list_projects.handlers import command_projects
 AUTH_USER, WORK_WITH_LOGIN_USER = range(2)
-registration_handler = ConversationHandler(
+
+def setup_dispatcher(dp):
+    """
+    Adding handlers for events from Telegram
+    """
+    registration_handler = ConversationHandler(
         entry_points=[CommandHandler('start', onboarding_handlers.command_start)],
         states={
             AUTH_USER: [
                 user_auth_handler,
             ],
-            WORK_WITH_LOGIN_USER: [MessageHandler(Filters.text & ~Filters.command, work_with_login_user)],
+            WORK_WITH_LOGIN_USER: [
+                CommandHandler("projects", command_projects)
+            ],
         },
         fallbacks=[CommandHandler('start', onboarding_handlers.command_start)],
     )
-def setup_dispatcher(dp):
-    """
-    Adding handlers for events from Telegram
-    """
     # onboarding
     dp.add_handler(registration_handler)
-
-    # Установка хендлера списка проектов. В аргументах команда и коллбек
-    dp.add_handler((CommandHandler("projects", command_projects)))
 
     # admin commands
     dp.add_handler(CommandHandler("admin", admin_handlers.admin))
