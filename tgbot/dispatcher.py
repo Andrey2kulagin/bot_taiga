@@ -11,7 +11,6 @@ from dtb.settings import DEBUG
 from tgbot.handlers.broadcast_message.manage_data import CONFIRM_DECLINE_BROADCAST
 from tgbot.handlers.broadcast_message.static_text import broadcast_command
 from tgbot.handlers.onboarding.manage_data import SECRET_LEVEL_BUTTON
-
 from tgbot.handlers.utils import files, error
 from tgbot.handlers.admin import handlers as admin_handlers
 from tgbot.handlers.location import handlers as location_handlers
@@ -22,24 +21,26 @@ from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, M
 from tgbot.handlers.onboarding.handlers import domain_choise_handler, work_with_login_user
 from tgbot.handlers.user_auth_in_taiga.handlers import user_auth_handler
 from tgbot.handlers.list_projects.handlers import command_projects
+from tgbot.handlers.ping_command.handlers import ping_command
 AUTH_USER, WORK_WITH_LOGIN_USER = range(2)
-
-def setup_dispatcher(dp):
-    """
-    Adding handlers for events from Telegram
-    """
-    registration_handler = ConversationHandler(
+registration_handler = ConversationHandler(
         entry_points=[CommandHandler('start', onboarding_handlers.command_start)],
         states={
             AUTH_USER: [
                 user_auth_handler,
             ],
             WORK_WITH_LOGIN_USER: [
-                CommandHandler("projects", command_projects)
+                CommandHandler("projects", command_projects),
+                CommandHandler("ping", ping_command)
             ],
         },
         fallbacks=[CommandHandler('start', onboarding_handlers.command_start)],
     )
+
+def setup_dispatcher(dp):
+    """
+    Adding handlers for events from Telegram
+    """
     # onboarding
     dp.add_handler(registration_handler)
 
@@ -87,4 +88,6 @@ def setup_dispatcher(dp):
 
 
 n_workers = 0 if DEBUG else 4
-dispatcher = setup_dispatcher(Dispatcher(bot, update_queue=None, workers=n_workers, use_context=True))
+dispatcher = setup_dispatcher(
+    Dispatcher(bot, update_queue=None, workers=n_workers, use_context=True)
+)
