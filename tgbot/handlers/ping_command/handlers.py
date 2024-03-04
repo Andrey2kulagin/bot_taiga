@@ -1,12 +1,9 @@
 import datetime
-
 from django.utils import timezone
 from telegram import ParseMode, Update
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, Filters
-
-from tgbot.handlers.list_projects import static_text, utils, static_text
+from tgbot.handlers.ping_command import static_text, utils, static_text
 from users.models import User
-from tgbot.handlers.list_projects.keyboards import make_keyboard_for_start_command
 from tgbot import dispatcher
 
 

@@ -20,13 +20,7 @@ def command_projects(update: Update, context: CallbackContext) -> None:
         tg_id = update.message.from_user.id
         projects = utils.get_projects(tg_id)
         text = ""
-        try:
-            # for i in range(len(projects[1])):
-            #     text += "**" + str(i + 1) + ".** " + projects[1][i]["name"] + "\n"
-            # update.message.reply_text(text=text, reply_markup=make_keyboard_for_projects_list())
-            update.message.reply_text(text=projects.text())
-        except Exception:
-            update.message.reply_text(text=static_text.generic_error_message)
+        update.message.reply_text(text=projects)
     else:
         # say to authorize
         text = static_text.bot_user_not_authorized.format(first_name=u.first_name)
