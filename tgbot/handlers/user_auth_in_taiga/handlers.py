@@ -39,6 +39,7 @@ def standard_domain_handler(update: Update, context: CallbackContext):
     link = generate_standard_auth_link(domain="https://api.taiga.io/", tg_id=user_id)
     update.message.reply_text(text=f"{GENERATE_LINK}", reply_markup=ReplyKeyboardRemove())
     update.message.reply_text(text=f"{LINK_FOR_AUTH}",reply_markup=reg_link_button(link))
+    return -1
 
 def user_domain_handler(update: Update, context: CallbackContext):
     update.message.reply_text(text=INPUT_YOUR_DOMAIN, reply_markup=ReplyKeyboardRemove())
@@ -61,6 +62,7 @@ def selfhost_standard_login_link_gen(update: Update, context: CallbackContext):
     link = generate_standard_auth_link(domain=user_domain, tg_id=user_id)
     update.message.reply_text(text=f"{GENERATE_LINK}", reply_markup=ReplyKeyboardRemove())
     update.message.reply_text(text=f"{LINK_FOR_AUTH}",reply_markup=reg_link_button(link))
+    return -1
 
 def selfhost_application_login_link_gen(update: Update, context: CallbackContext):
     user_domain =  context.user_data['domain']
@@ -69,10 +71,10 @@ def selfhost_application_login_link_gen(update: Update, context: CallbackContext
     link = generate_application_auth_link(domain=user_domain, tg_id=user_id)
     update.message.reply_text(text=f"{GENERATE_LINK}", reply_markup=ReplyKeyboardRemove())
     update.message.reply_text(text=f"{LINK_FOR_AUTH}",reply_markup=reg_link_button(link))
-
+    return -1
     
 
-
+# TODO: добавить команду quit, которая ведет на фоллбек. Либо сделать такую логику, чтобы фоллбекаться при получении ереси
 user_auth_handler = ConversationHandler(
                 entry_points=[
                     MessageHandler(Filters.regex(rf"^{AUTH_BUTTON}$"), login_start_msg),# входная функция - нажатие кнопки "Авторизация"
