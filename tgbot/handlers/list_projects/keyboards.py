@@ -15,3 +15,8 @@ def make_keyboard_for_projects_list() -> ReplyKeyboardMarkup:
     ], resize_keyboard=True)
     return markup
 
+def select_project(projects) -> ReplyKeyboardMarkup:
+    markup = ReplyKeyboardMarkup([
+        [str(i + 1) for i in range(len(projects))]
+    ], resize_keyboard=True)
+    return markup

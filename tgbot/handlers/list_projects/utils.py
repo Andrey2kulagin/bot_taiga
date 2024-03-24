@@ -17,7 +17,7 @@ def get_projects(tg_id):
         projects = list_project(user.auth_token, user.taiga_id)
     else:
         projects = list_project(user.application_token, user.taiga_id)
-    return format_projects(projects)
+    return projects
 
 def format_projects(projects):
     '''
