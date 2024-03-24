@@ -17,4 +17,19 @@ def get_projects(tg_id):
         projects = list_project(user.auth_token, user.taiga_id)
     else:
         projects = list_project(user.application_token, user.taiga_id)
-    return projects
+    return format_projects(projects)
+
+def format_projects(projects):
+    '''
+    Форматирует список проектов в красивый текстовый формат.
+    :param projects: список проектов в формате [{"id": int, "name": str}]
+    :return: строка, содержащая информацию о проектах
+    '''
+    if not projects:
+        return "У вас нет проектов."
+
+    projects_str = "Ваши проекты:\n\n"
+    for project in projects:
+        projects_str += f"ID: {project['id']} - Название: {project['name']}\n"
+
+    return projects_str
