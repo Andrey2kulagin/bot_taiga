@@ -29,7 +29,10 @@ def format_projects(projects):
         return "У вас нет проектов."
 
     projects_str = "Ваши проекты:\n\n"
+    count = 1
     for project in projects:
-        projects_str += f"ID: {project['id']} - Название: {project['name']}\n"
+        projects_str += f"{count}. ID: {project['id']} - Название: {project['name']}\n"
+        count += 1
+    projects_str += "\nВыберете проект для продолжения работы."
 
     return projects_str
