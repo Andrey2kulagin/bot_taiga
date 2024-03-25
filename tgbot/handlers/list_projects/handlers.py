@@ -32,7 +32,8 @@ def command_projects(update: Update, context: CallbackContext) -> None:
 
 
 def create_issue(update: Update, context: CallbackContext):
-    # получаем предыдущее сообщение от пользователя - оно скорее всего содержит двузначное число - индекс проекта в списке проектов
+    # получаем предыдущее сообщение от пользователя - оно скорее всего содержит двузначное или однозначное
+    # число - индекс проекта в списке проектов
     project_number = int(update.message.from_user) - 1
     tg_id = update.message.from_user.id
     # список проектов, вернувшийся с сервера
@@ -54,11 +55,9 @@ def create_issue(update: Update, context: CallbackContext):
         "subject": subject,  # название issue                 - спросить у пользователя
         "tags": tags,  # лист тегов
         "type": type  # id тайпа
-    проблема в том, как передавать от одной функции к другой это все
-    надо както использовать стейты при этом
-    может быть можно писать это все в дб, но звучит не очень
-    заставить висеть ЭТУ функцию, пока пользователь не прокликает все остальные функции для получения
-    от него аргументов - такая себе затея, учитывая что у нас асинхронный клиент
+    передавать это всё надо через контекст
+    https://docs.python-telegram-bot.org/en/stable/telegram.ext.callbackcontext.html (смотрим на тип контекста user_data)
+    https://github.com/python-telegram-bot/python-telegram-bot/blob/master/examples/conversationbot2.py (пример)
     '''
 
 projects_menu_handler = ConversationHandler(
