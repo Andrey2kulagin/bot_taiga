@@ -20,7 +20,7 @@ from tgbot.main import bot
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, Filters
 from tgbot.handlers.onboarding.handlers import domain_choise_handler, work_with_login_user
 from tgbot.handlers.user_auth_in_taiga.handlers import user_auth_handler
-from tgbot.handlers.list_projects.handlers import command_projects
+from tgbot.handlers.list_projects.handlers import projects_menu_handler
 from tgbot.handlers.ping_command.handlers import ping_command
 AUTH_USER, WORK_WITH_LOGIN_USER = range(2)
 registration_handler = ConversationHandler(
@@ -30,7 +30,7 @@ registration_handler = ConversationHandler(
                 user_auth_handler,
             ],
             WORK_WITH_LOGIN_USER: [
-                CommandHandler("projects", command_projects),
+                projects_menu_handler,
                 CommandHandler("ping", ping_command)
             ],
         },
