@@ -41,7 +41,7 @@ def work_with_login_user(update: Update, context: CallbackContext):
 
 
 def secret_level(update: Update, context: CallbackContext) -> None:
-    # callback_data: SECRET_LEVEL_BUTTON variable from manage_data.py
+    # callback_data: SECRET_LEVEL_BUTTON variable from utils.py
     """ Pressed 'secret_level_button_text' after /start command"""
     user_id = extract_user_data_from_update(update)['user_id']
     text = static_text.unlock_secret_room.format(
