@@ -7,12 +7,12 @@ from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, M
 from tgbot.handlers.list_projects import static_text, utils
 from tgbot.handlers.list_projects.static_text import select_project_action_message, CREATE_ISSUE_BUTTON, name_issue_message, describe_issue_message, select_issue_severity_message, select_issue_type_message, type_variants, priority_variants, severity_variants
 from users.models import User
-from tgbot.handlers.list_projects.keyboards import make_keyboard_for_start_command, select_project_keyboard, select_project_action, select_issue_severity_keyboard, select_issue_type_keyboards
+from tgbot.handlers.list_projects.keyboards import make_keyboard_for_start_command, select_project_keyboard, select_project_action, select_issue_severity_keyboard, select_issue_type_keyboard
 from tgbot import dispatcher
 from tgbot.handlers.onboarding import handlers as onboarding_handlers
-from tgbot.utils.taiga_back.create_issue import create_issue
+from utils.taiga_back.create_issue import create_issue
 import re
-PROJECT_SELECTION, NAMING_ISSUE, DESCRIBING_ISSUE, SELECTING_SEVERITY, SELECTING_PRIORITY, SELECTING_TYPE, CREATING_ISSUE = range(6)
+PROJECT_SELECTION, NAMING_ISSUE, DESCRIBING_ISSUE, SELECTING_SEVERITY, SELECTING_PRIORITY, SELECTING_TYPE, CREATING_ISSUE = range(7)
 
 # Коллбек команды списка проектов. Если пользователь уже входил в тайгу через бота, будет выведен список проектов
 # если не авторизован, то попросим авторизоваться
@@ -179,7 +179,7 @@ projects_menu_handler = ConversationHandler(
         ],
         # TODO: проверять нажата ли кнопка или текст от балды
         SELECTING_TYPE: [
-            MessageHandler(Filters.text, select_issue_tag)
+            MessageHandler(Filters.text, select_issue_type)
         ],
         # TODO: проверять нажата ли кнопка или текст от балды
         CREATING_ISSUE: [
