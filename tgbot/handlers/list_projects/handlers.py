@@ -5,9 +5,9 @@ from telegram import ParseMode, Update, ReplyKeyboardRemove
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, Filters, ContextTypes
 
 from tgbot.handlers.list_projects import static_text, utils
-from tgbot.handlers.list_projects.static_text import select_project_action_message, CREATE_ISSUE_BUTTON, name_issue_message, describe_issue_message, select_issue_severity_message, select_issue_type_message, type_variants, priority_variants, severity_variants
+from tgbot.handlers.list_projects.static_text import select_project_action_message, CREATE_ISSUE_BUTTON, name_issue_message, describe_issue_message, select_issue_severity_message, select_issue_priority_message, select_issue_type_message, type_variants, priority_variants, severity_variants
 from users.models import User
-from tgbot.handlers.list_projects.keyboards import make_keyboard_for_start_command, select_project_keyboard, select_project_action, select_issue_severity_keyboard, select_issue_type_keyboard
+from tgbot.handlers.list_projects.keyboards import make_keyboard_for_start_command, select_project_keyboard, select_project_action, select_issue_severity_keyboard, select_issue_priority_keyboard, select_issue_type_keyboard
 from tgbot import dispatcher
 from tgbot.handlers.onboarding import handlers as onboarding_handlers
 from utils.taiga_back.create_issue import create_issue
@@ -98,7 +98,7 @@ def select_issue_priority(update:Update, context: CallbackContext):
     return SELECTING_TYPE
 
 def select_issue_type(update:Update, context: CallbackContext):
-    issue_priority = int(update.message.text)
+    issue_priority = str(update.message.text)
     context.user_data["issue_priority"] = issue_priority
     update.message.reply_text(text=select_issue_type_message, reply_markup=select_issue_type_keyboard())
     return CREATING_ISSUE
@@ -106,8 +106,8 @@ def select_issue_type(update:Update, context: CallbackContext):
 def create_issue_command_handler(update:Update, context: CallbackContext):
     tg_id = update.message.from_user.id
     issue_type = str(update.message.text)
-    issue_priority = int(context.user_data["issue_priority"])
-    issue_severity = int(context.user_data["issue_severity"])
+    issue_priority = str(context.user_data["issue_priority"])
+    issue_severity = str(context.user_data["issue_severity"])
     issue_description = str(context.user_data["issue_description"])
     issue_name = str(context.user_data["issue_name"])
     project_id = int(context.user_data["selected_project_id"])
@@ -130,30 +130,29 @@ def create_issue_command_handler(update:Update, context: CallbackContext):
         issue_priority = 3384697
 
     # замена важности на цифровую
-    if issue_sevetity == sevetity_variants[0]:
-        issue_sevetity = 5633959
-    elif issue_sevetity == sevetity_variants[1]:
-        issue_sevetity = 5633960
-    elif issue_sevetity == sevetity_variants[2]:
-        issue_sevetity = 5633961
-    elif issue_sevetity == sevetity_variants[3]:
-        issue_sevetity = 5633962
-    elif issue_sevetity == sevetity_variants[4]:
-        issue_sevetity = 5633963
+    if issue_severity == severity_variants[0]:
+        issue_severity = 5633959
+    elif issue_severity == severity_variants[1]:
+        issue_severity = 5633960
+    elif issue_severity == severity_variants[2]:
+        issue_severity = 5633961
+    elif issue_severity == severity_variants[3]:
+        issue_severity = 5633962
+    elif issue_severity == severity_variants[4]:
+        issue_severity = 5633963
     
     
     create_issue(
-        auth_token=get_taiga_token_by_tg_id(tg_id),
+        auth_token=utils.get_taiga_token_by_tg_id(tg_id),
         description=issue_description,
         priority=issue_priority,
         project=project_id,
-        severity=project_severity,
-        status=project_status,
+        severity=issue_severity,
         subject=issue_name,
         type=issue_type
     )
     # TODO: исправить на статический текст
-    update.message(text="Готово", reply_markup=ReplyKeyboardRemove())
+    update.message.reply_text(text="Готово", reply_markup=ReplyKeyboardRemove())
     return -1
 
 projects_menu_handler = ConversationHandler(
@@ -175,7 +174,7 @@ projects_menu_handler = ConversationHandler(
         ],
         # TODO: проверять нажата ли кнопка или текст от балды
         SELECTING_PRIORITY: [
-            MessageHandler(Filters.text, select_issue_severity)
+            MessageHandler(Filters.text, select_issue_priority)
         ],
         # TODO: проверять нажата ли кнопка или текст от балды
         SELECTING_TYPE: [
@@ -186,5 +185,5 @@ projects_menu_handler = ConversationHandler(
             MessageHandler(Filters.text, create_issue_command_handler)
         ]
     },
-    fallbacks = [CommandHandler('start', onboarding_handlers.command_start)]
+    fallbacks = [CommandHandler('abort', command_projects)]
 )
