@@ -24,10 +24,14 @@ def format_projects(projects):
     Форматирует список проектов в красивый текстовый формат.
     :param projects: список проектов в формате [{"id": int, "name": str}]
     :return: строка, содержащая информацию о проектах
+    TODO: заменить текст захардкоженный текст на динамический
     '''
     if not projects:
         return "У вас нет проектов."
 
+    if "Ошибка: 401" in projects:
+        return "Ваш токен истек."
+    
     projects_str = "Ваши проекты:\n\n"
     count = 1
     for project in projects:
@@ -36,3 +40,10 @@ def format_projects(projects):
     projects_str += "\nВыберете проект для продолжения работы."
 
     return projects_str
+
+def get_taiga_token_by_tg_id(tg_id):
+    user = User.objects.get(user_id=tg_id)
+    if user.auth_type == "Bearer":
+        return user.auth_token
+    else:
+        return user.application_token
