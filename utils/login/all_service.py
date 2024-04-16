@@ -2,7 +2,7 @@ import requests
 from users.models import User
 from urllib.parse import urlparse
 import os
-from telegram import Bot
+from telegram import Bot, ReplyKeyboardMarkup
 
 def extract_domain(url):
     parsed_url = urlparse(url)
@@ -69,13 +69,22 @@ def set_taiga_user_data(tg_id, domain,auth_type, refresh=None, application_token
         user.auth_type = "Application"
         user.application_token = application_token
     user.save()
-    send_succes_auth_msg(user.user_id)
+    send_success_auth_msg(user.user_id)
     
 
-def send_succes_auth_msg(chat_id):
+def make_start_keyboard() -> ReplyKeyboardMarkup:
+    markup = ReplyKeyboardMarkup([
+        [
+            "/start"
+        ]
+    ], resize_keyboard=True)
+    return markup
+
+
+def send_success_auth_msg(chat_id):
     """_summary_
     Отправляет пользователю сообщение об успешной авторизации в тайге
     """
     bot_token = os.getenv("TELEGRAM_TOKEN")
     bot = Bot(token=bot_token)
-    bot.send_message(chat_id=chat_id, text="Поздравляем, авторизация завершена")
+    bot.send_message(chat_id=chat_id, text="Поздравляем, авторизация завершена", reply_markup=make_start_keyboard())

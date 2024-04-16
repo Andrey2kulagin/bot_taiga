@@ -7,8 +7,9 @@ from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, M
 from tgbot.handlers.onboarding import static_text
 from tgbot.handlers.utils.info import extract_user_data_from_update
 from users.models import User
-from tgbot.handlers.onboarding.keyboards import make_keyboard_for_start_command
-from tgbot import dispatcher 
+from tgbot.handlers.onboarding.keyboards import make_keyboard_for_start_command, make_keyboard_for_logged_in_taiga_user
+from tgbot import dispatcher
+
 
 def command_start(update: Update, context: CallbackContext) -> None:
     u, created = User.get_user_and_created(update, context)
@@ -16,19 +17,19 @@ def command_start(update: Update, context: CallbackContext) -> None:
     if created:
         text = static_text.start_created.format(first_name=u.first_name)
         update.message.reply_text(text=text,
-                              reply_markup=make_keyboard_for_start_command())
+                                  reply_markup=make_keyboard_for_start_command())
         return dispatcher.AUTH_USER
     else:
         if u.is_taiga_auth:
+            text = static_text.start_logged_in_taiga.format(first_name=u.first_name)
+            update.message.reply_text(text=text, reply_markup=make_keyboard_for_logged_in_taiga_user())
             return dispatcher.WORK_WITH_LOGIN_USER
         else:
             text = static_text.start_not_created.format(first_name=u.first_name)
             update.message.reply_text(text=text,
-                              reply_markup=make_keyboard_for_start_command())
+                                      reply_markup=make_keyboard_for_start_command())
             return dispatcher.AUTH_USER
 
-    
-    
 
 def domain_choise_handler(update: Update, context: CallbackContext):
     print("domain_choise_handler")
@@ -36,8 +37,6 @@ def domain_choise_handler(update: Update, context: CallbackContext):
 
 def work_with_login_user(update: Update, context: CallbackContext):
     print("work_with_login_user")
-
-
 
 
 def secret_level(update: Update, context: CallbackContext) -> None:

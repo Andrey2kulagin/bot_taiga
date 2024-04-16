@@ -22,20 +22,24 @@ from tgbot.handlers.onboarding.handlers import domain_choise_handler, work_with_
 from tgbot.handlers.user_auth_in_taiga.handlers import user_auth_handler
 from tgbot.handlers.list_projects.handlers import projects_menu_handler
 from tgbot.handlers.ping_command.handlers import ping_command
+from tgbot.handlers.logout_user.handlers import command_logout
+
 AUTH_USER, WORK_WITH_LOGIN_USER = range(2)
 registration_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', onboarding_handlers.command_start)],
-        states={
-            AUTH_USER: [
-                user_auth_handler,
-            ],
-            WORK_WITH_LOGIN_USER: [
-                projects_menu_handler,
-                CommandHandler("ping", ping_command)
-            ],
-        },
-        fallbacks=[CommandHandler('start', onboarding_handlers.command_start)],
-    )
+    entry_points=[CommandHandler('start', onboarding_handlers.command_start)],
+    states={
+        AUTH_USER: [
+            user_auth_handler,
+        ],
+        WORK_WITH_LOGIN_USER: [
+            projects_menu_handler,
+            CommandHandler("ping", ping_command),
+            CommandHandler('logout', command_logout),
+        ],
+    },
+    fallbacks=[CommandHandler('start', onboarding_handlers.command_start)],
+)
+
 
 def setup_dispatcher(dp):
     """
@@ -43,7 +47,7 @@ def setup_dispatcher(dp):
     """
     # onboarding
     dp.add_handler(registration_handler)
-
+    
     # admin commands
     dp.add_handler(CommandHandler("admin", admin_handlers.admin))
     dp.add_handler(CommandHandler("stats", admin_handlers.stats))
@@ -58,7 +62,8 @@ def setup_dispatcher(dp):
 
     # broadcast message
     dp.add_handler(
-        MessageHandler(Filters.regex(rf'^{broadcast_command}(/s)?.*'), broadcast_handlers.broadcast_command_with_message)
+        MessageHandler(Filters.regex(rf'^{broadcast_command}(/s)?.*'),
+                       broadcast_handlers.broadcast_command_with_message)
     )
     dp.add_handler(
         CallbackQueryHandler(broadcast_handlers.broadcast_decision_handler, pattern=f"^{CONFIRM_DECLINE_BROADCAST}")
