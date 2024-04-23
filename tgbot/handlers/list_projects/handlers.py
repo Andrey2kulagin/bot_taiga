@@ -1,18 +1,21 @@
-import datetime
-
-from django.utils import timezone
-from telegram import ParseMode, Update, ReplyKeyboardRemove
-from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, Filters, ContextTypes
+from telegram import Update, ReplyKeyboardRemove
+from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, Filters
 
 from tgbot.handlers.list_projects import static_text, utils
-from tgbot.handlers.list_projects.static_text import select_project_action_message, CREATE_ISSUE_BUTTON, name_issue_message, describe_issue_message, select_issue_severity_message, select_issue_priority_message, select_issue_type_message, type_variants, priority_variants, severity_variants
+from tgbot.handlers.list_projects.static_text import select_project_action_message, CREATE_ISSUE_BUTTON, \
+    name_issue_message, describe_issue_message, select_issue_severity_message, select_issue_priority_message, \
+    select_issue_type_message, type_variants, priority_variants, severity_variants
 from users.models import User
-from tgbot.handlers.list_projects.keyboards import make_keyboard_for_start_command, select_project_keyboard, select_project_action, select_issue_severity_keyboard, select_issue_priority_keyboard, select_issue_type_keyboard
+from tgbot.handlers.list_projects.keyboards import make_keyboard_for_start_command, select_project_keyboard, \
+    select_project_action, select_issue_severity_keyboard, select_issue_priority_keyboard, select_issue_type_keyboard
 from tgbot import dispatcher
-from tgbot.handlers.onboarding import handlers as onboarding_handlers
+from utils.taiga_back.get_taiga_token import get_taiga_token_by_tg_id
 from utils.taiga_back.create_issue import create_issue
 import re
-PROJECT_SELECTION, NAMING_ISSUE, DESCRIBING_ISSUE, SELECTING_SEVERITY, SELECTING_PRIORITY, SELECTING_TYPE, CREATING_ISSUE = range(7)
+
+PROJECT_SELECTION, NAMING_ISSUE, DESCRIBING_ISSUE, SELECTING_SEVERITY, SELECTING_PRIORITY, SELECTING_TYPE, CREATING_ISSUE = range(
+    7)
+
 
 # Коллбек команды списка проектов. Если пользователь уже входил в тайгу через бота, будет выведен список проектов
 # если не авторизован, то попросим авторизоваться
@@ -72,11 +75,13 @@ def select_project(update: Update, context: CallbackContext):
     https://github.com/python-telegram-bot/python-telegram-bot/blob/master/examples/conversationbot2.py (пример)
     '''
 
+
 # говорим пользователю написать название, перекидываем на следующий стейт где запомним его
 def name_issue(update: Update, context: CallbackContext):
     print(context.user_data["selected_project_id"])
     update.message.reply_text(text=name_issue_message, reply_markup=ReplyKeyboardRemove())
     return DESCRIBING_ISSUE
+
 
 def describe_issue(update: Update, context: CallbackContext):
     issue_name = str(update.message.text)
@@ -85,25 +90,29 @@ def describe_issue(update: Update, context: CallbackContext):
     update.message.reply_text(text=text, reply_markup=ReplyKeyboardRemove())
     return SELECTING_SEVERITY
 
+
 def select_issue_severity(update: Update, context: CallbackContext):
     issue_description = str(update.message.text)
     context.user_data["issue_description"] = issue_description
     update.message.reply_text(text=select_issue_severity_message, reply_markup=select_issue_severity_keyboard())
     return SELECTING_PRIORITY
 
-def select_issue_priority(update:Update, context: CallbackContext):
+
+def select_issue_priority(update: Update, context: CallbackContext):
     issue_severity = str(update.message.text)
     context.user_data["issue_severity"] = issue_severity
     update.message.reply_text(text=select_issue_priority_message, reply_markup=select_issue_priority_keyboard())
     return SELECTING_TYPE
 
-def select_issue_type(update:Update, context: CallbackContext):
+
+def select_issue_type(update: Update, context: CallbackContext):
     issue_priority = str(update.message.text)
     context.user_data["issue_priority"] = issue_priority
     update.message.reply_text(text=select_issue_type_message, reply_markup=select_issue_type_keyboard())
     return CREATING_ISSUE
 
-def create_issue_command_handler(update:Update, context: CallbackContext):
+
+def create_issue_command_handler(update: Update, context: CallbackContext):
     tg_id = update.message.from_user.id
     issue_type = str(update.message.text)
     issue_priority = str(context.user_data["issue_priority"])
@@ -140,10 +149,9 @@ def create_issue_command_handler(update:Update, context: CallbackContext):
         issue_severity = 5633962
     elif issue_severity == severity_variants[4]:
         issue_severity = 5633963
-    
-    
+
     create_issue(
-        auth_token=utils.get_taiga_token_by_tg_id(tg_id),
+        auth_token=get_taiga_token_by_tg_id(tg_id),
         description=issue_description,
         priority=issue_priority,
         project=project_id,
@@ -155,8 +163,9 @@ def create_issue_command_handler(update:Update, context: CallbackContext):
     update.message.reply_text(text="Готово", reply_markup=ReplyKeyboardRemove())
     return -1
 
+
 projects_menu_handler = ConversationHandler(
-    entry_points = [CommandHandler("projects", command_projects)],
+    entry_points=[CommandHandler("projects", command_projects)],
     states={
         PROJECT_SELECTION: [
             # ([1-9]|[1-9][0-9])
@@ -185,5 +194,5 @@ projects_menu_handler = ConversationHandler(
             MessageHandler(Filters.text, create_issue_command_handler)
         ]
     },
-    fallbacks = [CommandHandler('abort', command_projects)]
+    fallbacks=[CommandHandler('abort', command_projects)]
 )

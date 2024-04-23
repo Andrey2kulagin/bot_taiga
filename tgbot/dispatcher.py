@@ -23,6 +23,7 @@ from tgbot.handlers.user_auth_in_taiga.handlers import user_auth_handler
 from tgbot.handlers.list_projects.handlers import projects_menu_handler
 from tgbot.handlers.ping_command.handlers import ping_command
 from tgbot.handlers.logout_user.handlers import command_logout
+from tgbot.handlers.command_refresh.handlers import refresh_token
 
 AUTH_USER, WORK_WITH_LOGIN_USER = range(2)
 registration_handler = ConversationHandler(
@@ -35,6 +36,7 @@ registration_handler = ConversationHandler(
             projects_menu_handler,
             CommandHandler("ping", ping_command),
             CommandHandler('logout', command_logout),
+            CommandHandler("refresh", refresh_token)
         ],
     },
     fallbacks=[CommandHandler('start', onboarding_handlers.command_start)],
