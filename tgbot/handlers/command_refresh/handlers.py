@@ -7,5 +7,5 @@ from utils.taiga_back.get_taiga_token import get_taiga_token_by_tg_id
 
 def refresh_token(update: Update, context: CallbackContext) -> None:
     tg_id = update.message.from_user.id
-    text = refresh_access_token(tg_id)[1]
+    text = refresh_access_token(tg_id)
     update.message.reply_text(text=text)

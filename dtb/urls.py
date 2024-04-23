@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.views.decorators.csrf import csrf_exempt
 
 from . import views
+from .views import WebhookReceiver
 
 urlpatterns = [
     path('taiga_login/', include("login.urls")),
@@ -26,5 +27,5 @@ urlpatterns = [
     path('__debug__/', include(debug_toolbar.urls)),
     path('', views.index, name="index"),
     path('super_secter_webhook/', csrf_exempt(views.TelegramBotWebhookView.as_view())),
-    
+    path('webhook/', WebhookReceiver.as_view(), name='webhook'),
 ]

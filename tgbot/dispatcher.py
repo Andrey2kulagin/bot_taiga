@@ -94,7 +94,8 @@ def setup_dispatcher(dp):
     return dp
 
 
-n_workers = 1 if DEBUG else 4
+#n_workers = 1 if DEBUG else 4
+n_workers = 4
 dispatcher = setup_dispatcher(
     Dispatcher(bot, update_queue=None, workers=n_workers, use_context=True)
 )

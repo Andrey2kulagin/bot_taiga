@@ -8,6 +8,10 @@ from dtb.celery import app
 from dtb.settings import DEBUG
 from tgbot.dispatcher import dispatcher
 from tgbot.main import bot
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from utils.webhook import parse_taiga_webhook
 
 logger = logging.getLogger(__name__)
 
@@ -39,3 +43,10 @@ class TelegramBotWebhookView(View):
 
     def get(self, request, *args, **kwargs):  # for debug
         return JsonResponse({"ok": "Get request received! But nothing done"})
+
+class WebhookReceiver(APIView):
+    def post(self, request, format=None):
+        data = request.data  # Получаем данные из POST-запроса
+        print(data)
+        print(parse_taiga_webhook(data))
+        return Response(status=status.HTTP_200_OK)

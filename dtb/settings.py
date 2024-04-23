@@ -7,6 +7,9 @@ import dotenv
 
 from pathlib import Path
 
+# https://stackoverflow.com/questions/66971594/how-to-fix-django-warning-models-w042-auto-created-primary-key-used-when-not
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
