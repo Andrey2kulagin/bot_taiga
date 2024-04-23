@@ -35,6 +35,7 @@ ALLOWED_HOSTS = ["*",]  # since Telegram uses a lot of IPs for webhooks
 
 
 INSTALLED_APPS = [
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,7 +50,8 @@ INSTALLED_APPS = [
 
     # local apps
     'users',
-    'login'
+    'login',
+    'webhook'
 ]
 SITE_ID = 2
 MIDDLEWARE = [
@@ -59,11 +61,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-
     'django.middleware.common.CommonMiddleware',
 ]
 
@@ -186,3 +186,9 @@ TELEGRAM_LOGS_CHAT_ID = os.getenv("TELEGRAM_LOGS_CHAT_ID", default=None)
 #     send_default_pii=True
 # )
 
+# https://chat.openai.com/share/f37c6e4b-bc6e-4291-96c4-9a42e2d48e46
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+}
