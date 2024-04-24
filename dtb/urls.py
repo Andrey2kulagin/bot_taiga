@@ -22,10 +22,10 @@ from . import views
 from webhook.views import WebhookReceiver
 
 urlpatterns = [
+    path('webhook/', csrf_exempt(WebhookReceiver.as_view()), name='webhook'),
     path('taiga_login/', include("login.urls")),
     path('', admin.site.urls),
     path('__debug__/', include(debug_toolbar.urls)),
     path('', views.index, name="index"),
     path('super_secter_webhook/', csrf_exempt(views.TelegramBotWebhookView.as_view())),
-    path('webhook/', csrf_exempt(WebhookReceiver.as_view()), name='webhook')
 ]

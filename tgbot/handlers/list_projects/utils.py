@@ -1,6 +1,6 @@
 from utils.taiga_back.lists_project import list_project
 from users.models import User
-
+from utils.taiga_back.refresh_token import refresh_access_token
 
 def get_projects(tg_id):
     '''
@@ -17,6 +17,11 @@ def get_projects(tg_id):
         projects = list_project(user.auth_token, user.taiga_id)
     else:
         projects = list_project(user.application_token, user.taiga_id)
+
+    if "Ошибка: 401" in projects:
+        refresh_access_token(tg_id)
+        get_projects(tg_id)
+
     return projects
 
 def format_projects(projects):
